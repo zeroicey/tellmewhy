@@ -19,20 +19,22 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { useState, type MouseEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router";
+import useAuthStore from "@/stores/auth";
 
 export default function SigninPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setLoading } = useAuthStore();
 
   const handleSignIn = async (e: MouseEvent) => {
     e.preventDefault();
+    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    console.log("Login reqestion end");
     if (error) throw new Error(error.code);
     navigate("/questions");
   };
@@ -55,7 +57,7 @@ export default function SigninPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form>
+              <form onClick={handleSignIn}>
                 <FieldGroup>
                   <Field>
                     <Button variant="outline" type="button">
@@ -95,6 +97,8 @@ export default function SigninPage() {
                       type="email"
                       placeholder="m@example.com"
                       required
+                      autoComplete="email"
+                      name="email"
                     />
                   </Field>
                   <Field>
@@ -106,13 +110,13 @@ export default function SigninPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       id="password"
                       type="password"
+                      autoComplete="current-password"
+                      name="password"
                       required
                     />
                   </Field>
                   <Field>
-                    <Button type="submit" onClick={handleSignIn}>
-                      Login
-                    </Button>
+                    <Button type="submit">Login</Button>
                     <FieldDescription className="text-center">
                       Don&apos;t have an account? <a href="/signup">Sign up</a>
                     </FieldDescription>

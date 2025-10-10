@@ -16,28 +16,28 @@ export type Database = {
     Tables: {
       answers: {
         Row: {
-          content: string | null
+          content: string
           created_at: string
           id: number
           question_id: number
           updated_at: string
-          user_id: number
+          user_id: string
         }
         Insert: {
-          content?: string | null
+          content: string
           created_at?: string
           id?: number
           question_id: number
           updated_at?: string
-          user_id: number
+          user_id: string
         }
         Update: {
-          content?: string | null
+          content?: string
           created_at?: string
           id?: number
           question_id?: number
           updated_at?: string
-          user_id?: number
+          user_id?: string
         }
         Relationships: [
           {
@@ -47,14 +47,31 @@ export type Database = {
             referencedRelation: "questions"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "answers_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          id: string
+          nickname: string | null
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          id?: string
+          nickname?: string | null
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          id?: string
+          nickname?: string | null
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
       }
       questions: {
         Row: {
@@ -63,7 +80,7 @@ export type Database = {
           id: number
           title: string
           updated_at: string
-          user_id: number
+          user_id: string
         }
         Insert: {
           content?: string | null
@@ -71,7 +88,7 @@ export type Database = {
           id?: number
           title: string
           updated_at?: string
-          user_id: number
+          user_id?: string
         }
         Update: {
           content?: string | null
@@ -79,42 +96,7 @@ export type Database = {
           id?: number
           title?: string
           updated_at?: string
-          user_id?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "questions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      users: {
-        Row: {
-          created_at: string
-          email: string
-          id: number
-          nickname: string | null
-          updated_at: string
-          username: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: number
-          nickname?: string | null
-          updated_at?: string
-          username: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: number
-          nickname?: string | null
-          updated_at?: string
-          username?: string
+          user_id?: string
         }
         Relationships: []
       }

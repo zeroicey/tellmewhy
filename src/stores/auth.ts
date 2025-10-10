@@ -1,4 +1,3 @@
-// src/stores/useAuthStore.js
 import { supabase } from "@/lib/supabase";
 import type { Session, User } from "@supabase/supabase-js";
 import { create } from "zustand";
@@ -6,28 +5,41 @@ import { create } from "zustand";
 interface AuthStore {
   session: Session | null;
   user: User | null;
-  setSession: (session: Session | null) => void;
-  signOut: () => void;
+  isSignedIn: boolean;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+  signOut: () => Promise<void>;
 }
 
-const useAuthStore = create<AuthStore>((set) => ({
-  session: null,
-  user: null,
-  setSession: (session: Session | null) => {
-    set({ session, user: session?.user });
-  },
-  signOut: () => supabase.auth.signOut(),
-}));
-
-export const initializeAuth = async () => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  useAuthStore.getState().setSession(session);
-
-  supabase.auth.onAuthStateChange((_event, session) => {
-    useAuthStore.getState().setSession(session);
+const useAuthStore = create<AuthStore>((set) => {
+  const store = {
+    session: null,
+    user: null,
+    isSignedIn: false,
+    loading: true,
+    setLoading: (loading: boolean) => set({ loading }),
+    signOut: async () => {
+      set({ session: null, user: null, isSignedIn: false });
+      await supabase.auth.signOut();
+    },
+  };
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    set({
+      session,
+      user: session?.user ?? null,
+      isSignedIn: !!session,
+      loading: false,
+    });
   });
-};
+  supabase.auth.onAuthStateChange((_event, session) => {
+    set({
+      session,
+      user: session?.user ?? null,
+      isSignedIn: !!session,
+      loading: false,
+    });
+  });
+  return store;
+});
 
 export default useAuthStore;

@@ -17,14 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import useAuthStore from "@/stores/auth";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const { setLoading } = useAuthStore();
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (e: MouseEvent) => {
+    e.preventDefault();
+    setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -51,7 +55,7 @@ export default function SignUpPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form>
+              <form onClick={handleSignUp}>
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="name">Full Name</FieldLabel>
@@ -105,9 +109,7 @@ export default function SignUpPage() {
                     </FieldDescription>
                   </Field>
                   <Field>
-                    <Button onClick={handleSignUp} type="submit">
-                      Create Account
-                    </Button>
+                    <Button type="submit">Create Account</Button>
                     <FieldDescription className="text-center">
                       Already have an account? <a href="/signin">Sign in</a>
                     </FieldDescription>
