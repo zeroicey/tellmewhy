@@ -15,27 +15,25 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { GalleryVerticalEnd } from "lucide-react";
+import { GalleryVerticalEnd, Loader2 } from "lucide-react";
 import { useState, type MouseEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router";
-import useAuthStore from "@/stores/auth";
 
 export default function SigninPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setLoading } = useAuthStore();
+  const [loading, setLoading] = useState(false);
 
   const handleSignIn = async (e: MouseEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
-    if (error) throw new Error(error.code);
+    setLoading(false);
     navigate("/questions");
   };
 
@@ -57,10 +55,10 @@ export default function SigninPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onClick={handleSignIn}>
+              <form>
                 <FieldGroup>
                   <Field>
-                    <Button variant="outline" type="button">
+                    <Button variant="outline" type="button" disabled={loading}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -72,7 +70,7 @@ export default function SigninPage() {
                       </svg>
                       Login with Apple
                     </Button>
-                    <Button variant="outline" type="button">
+                    <Button variant="outline" type="button" disabled={loading}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -99,6 +97,7 @@ export default function SigninPage() {
                       required
                       autoComplete="email"
                       name="email"
+                      disabled={loading}
                     />
                   </Field>
                   <Field>
@@ -113,10 +112,17 @@ export default function SigninPage() {
                       autoComplete="current-password"
                       name="password"
                       required
+                      disabled={loading}
                     />
                   </Field>
                   <Field>
-                    <Button type="submit">Login</Button>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      onClick={handleSignIn}
+                    >
+                      {loading ? <Loader2 className="animate-spin" /> : "Login"}
+                    </Button>
                     <FieldDescription className="text-center">
                       Don&apos;t have an account? <a href="/signup">Sign up</a>
                     </FieldDescription>

@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd } from "lucide-react";
+import { GalleryVerticalEnd, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,25 +17,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import useAuthStore from "@/stores/auth";
+import { useNavigate } from "react-router";
 
 export default function SignUpPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const { setLoading } = useAuthStore();
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e: MouseEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
+    await supabase.auth.signUp({
       email,
       password,
     });
-
-    if (error) throw new Error(error.code);
-    console.log(data);
+    setLoading(false);
+    navigate("/signin");
   };
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
@@ -55,7 +55,7 @@ export default function SignUpPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onClick={handleSignUp}>
+              <form>
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="name">Full Name</FieldLabel>
@@ -66,6 +66,7 @@ export default function SignUpPage() {
                       type="text"
                       placeholder="John Doe"
                       required
+                      disabled={loading}
                     />
                   </Field>
                   <Field>
@@ -77,6 +78,7 @@ export default function SignUpPage() {
                       type="email"
                       placeholder="m@example.com"
                       required
+                      disabled={loading}
                     />
                   </Field>
                   <Field>
@@ -89,6 +91,7 @@ export default function SignUpPage() {
                           id="password"
                           type="password"
                           required
+                          disabled={loading}
                         />
                       </Field>
                       <Field>
@@ -101,6 +104,7 @@ export default function SignUpPage() {
                           id="confirm-password"
                           type="password"
                           required
+                          disabled={loading}
                         />
                       </Field>
                     </Field>
@@ -109,7 +113,17 @@ export default function SignUpPage() {
                     </FieldDescription>
                   </Field>
                   <Field>
-                    <Button type="submit">Create Account</Button>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      onClick={handleSignUp}
+                    >
+                      {loading ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        "Create Account"
+                      )}
+                    </Button>
                     <FieldDescription className="text-center">
                       Already have an account? <a href="/signin">Sign in</a>
                     </FieldDescription>
