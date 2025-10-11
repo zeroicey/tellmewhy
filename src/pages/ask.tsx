@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -42,7 +43,7 @@ export default function AskPage() {
           onChange={(e) => setTitle(e.target.value)}
           disabled={loading}
         />
-        <textarea
+        <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="请输入内容"
