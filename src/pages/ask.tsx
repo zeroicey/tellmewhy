@@ -23,7 +23,7 @@ export default function AskPage() {
       .from("questions")
       .insert([{ title: title, content: content }])
       .select();
-    /*键值对：e.target.value */
+    /*键值对：e.target.value这个的意思对应的就是 e就是， target.value就是对应目标的值 */
     console.log(data);
     console.log(error);
     // await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -34,6 +34,7 @@ export default function AskPage() {
     <div className="w-full h-full flex flex-col justify-center items-center ">
       <form className="flex items-center flex-col">
         <div className="mb-5 text-3xl ">this is the ask page</div>
+         <div className="mb-5 text-xl ">Please write down your questions~</div>
         <Input
           type="text"
           placeholder="请输入标题"
