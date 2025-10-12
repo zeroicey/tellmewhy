@@ -17,7 +17,7 @@ export default function Navbar() {
   }
   if (!isSignedIn || !user || !data) {
     return (
-      <div className="w-full flex items-center justify-between p-2">
+      <div className="w-full flex items-center justify-between p-2 sticky top-0 bg-white">
         <Link to={"/questions"}>
           <span>Tell me why ❓</span>
         </Link>
@@ -26,31 +26,29 @@ export default function Navbar() {
     );
   }
   return (
-    <div>
-      <div className="flex items-center justify-between p-2">
-        <Link to={"/questions"}>
-          <span>Tell me why ❓</span>
-        </Link>
-        <div className="flex items-center">
-          {location.pathname !== "/ask" && (
-            <Button
-              className="cursor-pointer"
-              variant={"default"}
-              onClick={() => {
-                navigate("/ask");
-              }}
-            >
-              Ask
-            </Button>
-          )}
-          <NavUser
-            user={{
-              name: data?.username || "Unknown",
-              email: user?.email || "",
-              avatar: data?.avatar_url || "",
+    <div className="flex items-center justify-between p-2 sticky top-0 bg-white">
+      <Link to={"/questions"}>
+        <span>Tell me why ❓</span>
+      </Link>
+      <div className="flex items-center">
+        {location.pathname !== "/ask" && (
+          <Button
+            className="cursor-pointer"
+            variant={"default"}
+            onClick={() => {
+              navigate("/ask");
             }}
-          />
-        </div>
+          >
+            Ask
+          </Button>
+        )}
+        <NavUser
+          user={{
+            name: data?.username || "Unknown",
+            email: user?.email || "",
+            avatar: data?.avatar_url || "",
+          }}
+        />
       </div>
     </div>
   );

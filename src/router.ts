@@ -6,6 +6,7 @@ import SignUpPage from "./pages/auth/signup";
 import QuestionPage from "./pages/question";
 import ProtectedLayout from "./components/layouts/protected-layout";
 import AskPage from "./pages/ask";
+import QuestionIdPage from "./pages/question/id";
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,16 @@ const router = createBrowserRouter([
         children: [
           {
             path: "questions",
-            Component: QuestionPage,
+            children: [
+              {
+                index: true,
+                Component: QuestionPage,
+              },
+              {
+                path: ":questionId",
+                Component: QuestionIdPage,
+              },
+            ],
           },
           {
             path: "ask",
