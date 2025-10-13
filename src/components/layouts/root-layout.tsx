@@ -16,9 +16,11 @@ export default function RootLayout() {
   return (
     <QueryProvider>
       <Toaster position={"bottom-center"} />
-      <main className="w-screen h-screen flex flex-col">
+      <main className="w-full min-h-screen flex flex-col bg-[#f4f6f9]">
         <Navbar />
-        <Outlet />
+        <div className="flex-1">
+          <Outlet />
+        </div>
       </main>
     </QueryProvider>
   );
