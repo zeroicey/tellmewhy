@@ -27,7 +27,7 @@ export default function SignUpPage() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSignUp = async (e: MouseEvent) => {
+  const handleSignUp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
     await supabase.auth.signUp({

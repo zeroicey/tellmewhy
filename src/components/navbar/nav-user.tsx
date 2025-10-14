@@ -1,9 +1,10 @@
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { BadgeCheck, Bell, ChevronsUpDown, Home, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -56,6 +57,29 @@ export function NavUser({
             </div>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={() => {
+              navigate("/profile");
+            }}
+          >
+            <Home />
+            Home
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              navigate("/home");
+            }}
+          >
+            <BadgeCheck />
+            Account
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Bell />
+            Notifications
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={async () => {
