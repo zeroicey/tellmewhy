@@ -12,30 +12,55 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import useAuthStore from "@/stores/auth";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
+import { useProfileQuery } from "@/hooks/use-profile-query";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
+  const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState(null);
+  const { isSignedIn, loading: authLoading } = useAuthStore();
+  const { data: profile, error } = useProfileQuery();
 
-  const handleUpdate = async () => {};
+  // 当profile加载完毕后的初始化的输入框
+  useEffect(() => {
+    if (profile) {
+      setUsername(profile.username || "");
+      setNickname(profile.nickname || "");
+    }
+  }, [profile]);
 
+  // 这个是处理更新信息的逻辑
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await supabase
+        .from("profiles")
+        .update({
+          username,
+          nickname,
+        })
+        .eq("id", profile?.id || "");
+    } catch (err) {
+      console.log(err);
+      toast.error("有问题，请再来一次！");
+      return;
+    } finally {
+      setLoading(false);
+      navigate("/questions");
+    }
+  };
+
+  // 这个是处理更新头像的逻辑
   const handleAvatarChange = async () => {
     console.log("the avatar is changed secussfully!");
   };
-
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     setLoading(true)
-  //     try {
-
-  //     }
-  //   }
-  // })
-
-  const { isSignedIn, loading: authLoading } = useAuthStore();
 
   if (!isSignedIn && !authLoading) {
     return <Navigate to="/signin" replace />;
@@ -72,6 +97,8 @@ export default function ProfilePage() {
                   id="checkout-7j9-card-name-43j"
                   placeholder="{username}"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </Field>
               <Field>
@@ -82,6 +109,8 @@ export default function ProfilePage() {
                   id="checkout-7j9-card-name-43j"
                   placeholder="{nickname}"
                   required
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
                 />
               </Field>
             </FieldGroup>
