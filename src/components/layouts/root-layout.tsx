@@ -6,7 +6,6 @@ import { cleanupAuthStore } from "@/stores/auth";
 import { useEffect } from "react";
 
 export default function RootLayout() {
-  // 在组件卸载时清理认证状态监听器
   useEffect(() => {
     return () => {
       cleanupAuthStore();

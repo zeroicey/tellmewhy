@@ -27,10 +27,16 @@ export function NavUser({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="lg" variant={"ghost"}>
+        <Button
+          size="lg"
+          variant={"ghost"}
+          className="text-white hover:bg-white/10 border-none"
+        >
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+            <AvatarFallback className="rounded-lg bg-white/10 text-white">
+              ??
+            </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium">{user.name}</span>
@@ -40,16 +46,18 @@ export function NavUser({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="min-w-56 rounded-lg"
+        className="min-w-56 rounded-lg bg-gradient-to-br from-blue-900/90 to-purple-900/90 text-white border border-gray-700/40 shadow-2xl"
         side={"bottom"}
         align="end"
         sideOffset={4}
       >
-        <DropdownMenuLabel className="p-0 font-normal">
+        <DropdownMenuLabel className="p-0 font-normal text-white/80">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <AvatarFallback className="rounded-lg bg-white/10 text-white">
+                ??
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
@@ -60,6 +68,7 @@ export function NavUser({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
+            className="text-white hover:bg-white/10 hover:text-white"
             onClick={() => {
               navigate("/home");
             }}
@@ -68,6 +77,7 @@ export function NavUser({
             Home
           </DropdownMenuItem>
           <DropdownMenuItem
+            className="text-white hover:bg-white/10 hover:text-white"
             onClick={() => {
               navigate("/profile");
             }}
@@ -75,13 +85,14 @@ export function NavUser({
             <BadgeCheck />
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="text-white hover:bg-white/10 hover:text-white">
             <Bell />
             Notifications
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
+          className="text-white hover:bg-white/10 hover:text-white"
           onClick={async () => {
             await supabase.auth.signOut();
             navigate("/signin");

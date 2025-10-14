@@ -9,22 +9,26 @@ export default function Navbar() {
   const { isSignedIn, user } = useAuthStore();
   if (
     location.pathname.startsWith("/signin") ||
-    location.pathname.startsWith("/signup")
+    location.pathname.startsWith("/signup") ||
+    location.pathname === "/"
   ) {
     return null;
   }
   if (!isSignedIn || !user) {
     return (
-      <div 
-        className="w-full flex items-center justify-between p-2 sticky top-0 backdrop-blur-sm border-b border-gray-800/20"
+      <div
+        className="w-full flex items-center justify-between p-2 backdrop-blur-sm border-b border-gray-800/20"
         style={{
-          background: "linear-gradient(135deg, rgba(12, 12, 12, 0.9) 0%, rgba(26, 26, 46, 0.9) 50%, rgba(22, 33, 62, 0.9) 100%)"
+          background:
+            "linear-gradient(135deg, rgba(12, 12, 12, 0.9) 0%, rgba(26, 26, 46, 0.9) 50%, rgba(22, 33, 62, 0.9) 100%)",
         }}
       >
         <Link to={"/questions"}>
-          <span className="text-white font-semibold hover:text-blue-300 transition-colors">Tell me why ❓</span>
+          <span className="text-white font-semibold hover:text-blue-300 transition-colors">
+            Tell me why ❓
+          </span>
         </Link>
-        <Button 
+        <Button
           onClick={() => navigate("/signin")}
           className="bg-blue-600 hover:bg-blue-700 text-white border-none"
         >
@@ -34,14 +38,17 @@ export default function Navbar() {
     );
   }
   return (
-    <div 
-      className="flex items-center justify-between p-2 sticky top-0 backdrop-blur-sm border-b border-gray-800/20"
+    <div
+      className="flex items-center justify-between p-2 backdrop-blur-sm border-b border-gray-800/20"
       style={{
-        background: "linear-gradient(135deg, rgba(12, 12, 12, 0.9) 0%, rgba(26, 26, 46, 0.9) 50%, rgba(22, 33, 62, 0.9) 100%)"
+        background:
+          "linear-gradient(135deg, rgba(12, 12, 12, 0.9) 0%, rgba(26, 26, 46, 0.9) 50%, rgba(22, 33, 62, 0.9) 100%)",
       }}
     >
       <Link to={"/questions"}>
-        <span className="text-white font-semibold hover:text-blue-300 transition-colors">Tell me why ❓</span>
+        <span className="text-white font-semibold hover:text-blue-300 transition-colors">
+          Tell me why ❓
+        </span>
       </Link>
       <div className="flex items-center">
         {location.pathname !== "/ask" && (
