@@ -17,3 +17,7 @@ export const useAnswerQuery = (questionId: string | undefined) => {
     enabled: !!questionId,
   });
 };
+
+export const userAnswerCreateMutate = () => {
+
+}

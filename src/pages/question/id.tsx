@@ -1,17 +1,15 @@
 import { useParams } from "react-router";
 import { useQuestionByIdQuery } from "@/hooks/use-question-query";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAnswerQuery } from "@/hooks/use-answer-query";
-import { UserCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AnswerEditor from "@/components/answer/answer-editor";
 
 export default function QuestionIdPage() {
   const { questionId } = useParams<{ questionId: string }>();
-  const [isEditing, setIsEditing] = useState(false);
-  const [answer, setAnswer] = useState("");
+  const [answerEditorShown, setAnswerEditorShown] = useState(true);
+  const [answerEditorValue, setAnswerEditorValue] = useState("");
   const { data: question, isPending, error } = useQuestionByIdQuery(questionId);
-
   const { data: answers } = useAnswerQuery(questionId);
 
   // 加载状态
@@ -79,21 +77,8 @@ export default function QuestionIdPage() {
           </div>
         </div>
       </div>
-      {isEditing && (
-        <div className="w-full sm:w-[450px] md:w-[600px] lg:w-[800px] bg-white p-2 shadow-md">
-          <textarea
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            className="h-200 w-full border-none focus:outline-none focus:ring-0 focus:border-none resize-none"
-            placeholder="Leave a comment..."
-          />
-          <div className="mt-2 flex justify-between items-center sticky bottom-0 bg-white border-t py-2">
-            <div>
-              <span>Number: {answer.length}</span>
-            </div>
-            <Button className="cursor-pointer">Post Comment</Button>
-          </div>
-        </div>
+      {answerEditorShown && (
+        <AnswerEditor answerEditorValue={answerEditorValue} setAnswerEditorValue={setAnswerEditorValue} />
       )}
       {answers?.map((answer) => (
         <div
