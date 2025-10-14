@@ -35,9 +35,9 @@ export default function ProfilePage() {
   //   }
   // })
 
-  const { isSignedIn } = useAuthStore();
+  const { isSignedIn, loading: authLoading } = useAuthStore();
 
-  if (!isSignedIn) {
+  if (!isSignedIn && !authLoading) {
     return <Navigate to="/signin" replace />;
   }
 

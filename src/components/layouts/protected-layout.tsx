@@ -4,11 +4,10 @@ import { Loader2 } from "lucide-react";
 import { useProfileQuery } from "@/hooks/use-profile-query";
 
 export default function ProtectedLayout() {
-  const { isSignedIn, loading } = useAuthStore();
-  const { data: profile } = useProfileQuery();
-  console.log("profile:", profile);
+  const { isSignedIn, loading: authLoading } = useAuthStore();
+  const { data: profile, isLoading } = useProfileQuery();
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="w-full h-full fixed inset-0 flex items-center justify-center bg-[#f4f6f9] z-50">
         <Loader2 className="animate-spin" size={48} />
@@ -20,7 +19,7 @@ export default function ProtectedLayout() {
     return <Navigate to="/signin" replace />;
   }
 
-  if (isSignedIn && !profile) {
+  if (isSignedIn && !profile && !isLoading && !authLoading) {
     return <Navigate to="/profile" replace />;
   }
 

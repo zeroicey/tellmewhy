@@ -9,7 +9,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: profile } = useProfileQuery();
-  const { user } = useAuthStore();
+  const { user, signOut } = useAuthStore();
   if (
     location.pathname.startsWith("/signin") ||
     location.pathname.startsWith("/signup") ||
@@ -29,12 +29,12 @@ export default function Navbar() {
         <div className="flex items-center">
           <Button
             className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white border-none mr-2"
-            variant={"default"}
             onClick={() => {
-              navigate("/ask");
+              signOut();
+              navigate("/signin");
             }}
           >
-            <LogOut /> Logout
+            <LogOut /> Sign out
           </Button>
         </div>
       </div>
