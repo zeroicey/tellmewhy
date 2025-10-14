@@ -1,9 +1,12 @@
 import { Navigate, Outlet } from "react-router";
 import useAuthStore from "@/stores/auth";
 import { Loader2 } from "lucide-react";
+import { useProfileQuery } from "@/hooks/use-profile-query";
 
 export default function ProtectedLayout() {
   const { isSignedIn, loading } = useAuthStore();
+  const { data: profile } = useProfileQuery();
+  console.log("profile:", profile);
 
   if (loading) {
     return (
@@ -15,6 +18,10 @@ export default function ProtectedLayout() {
 
   if (!isSignedIn) {
     return <Navigate to="/signin" replace />;
+  }
+
+  if (isSignedIn && !profile) {
+    return <Navigate to="/profile" replace />;
   }
 
   return <Outlet />;

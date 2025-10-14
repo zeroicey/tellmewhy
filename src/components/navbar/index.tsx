@@ -3,10 +3,12 @@ import useAuthStore from "@/stores/auth";
 import { Link, useLocation, useNavigate } from "react-router";
 import { NavUser } from "./nav-user";
 import { Plus } from "lucide-react";
+import { useProfileQuery } from "@/hooks/use-profile-query";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: profile } = useProfileQuery();
   const { isSignedIn, user } = useAuthStore();
   if (
     location.pathname.startsWith("/signin") ||
@@ -53,9 +55,9 @@ export default function Navbar() {
         )}
         <NavUser
           user={{
-            name: user.user_metadata.username || "Unknown",
+            name: profile?.nickname || "Unknown",
             email: user?.email || "",
-            avatar: user.user_metadata.avatar_url || "",
+            avatar: profile?.avatar || "",
           }}
         />
       </div>

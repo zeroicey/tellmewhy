@@ -1,18 +1,18 @@
 import { useParams } from "react-router";
 import { useQuestionByIdQuery } from "@/hooks/use-question-query";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useAnswerQuery } from "@/hooks/use-answer-query";
+import { UserCircle } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function QuestionIdPage() {
   const { questionId } = useParams<{ questionId: string }>();
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [answer, setAnswer] = useState("");
-  const {
-    data: question,
-    isPending,
-    error,
-  } = useQuestionByIdQuery(+questionId!);
+  const { data: question, isPending, error } = useQuestionByIdQuery(questionId);
+
+  const { data: answers } = useAnswerQuery(questionId);
 
   // 加载状态
   if (isPending) {
@@ -84,11 +84,10 @@ export default function QuestionIdPage() {
           <textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            className="h-150 w-full border-none focus:outline-none focus:ring-0 focus:border-none resize-none"
+            className="h-200 w-full border-none focus:outline-none focus:ring-0 focus:border-none resize-none"
             placeholder="Leave a comment..."
           />
-          <Separator />
-          <div className="mt-2 flex justify-between items-center">
+          <div className="mt-2 flex justify-between items-center sticky bottom-0 bg-white border-t py-2">
             <div>
               <span>Number: {answer.length}</span>
             </div>
@@ -96,6 +95,21 @@ export default function QuestionIdPage() {
           </div>
         </div>
       )}
+      {answers?.map((answer) => (
+        <div
+          key={answer.id}
+          className="w-full sm:w-[450px] md:w-[600px] lg:w-[800px] bg-white p-2 shadow-md"
+        >
+          {/* avatar */}
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+            {answer.content}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

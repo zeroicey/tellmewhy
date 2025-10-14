@@ -15,14 +15,14 @@ export const useQuestionQuery = () => {
 };
 
 // 获取单个问题的hook
-export const useQuestionByIdQuery = (questionId: number) => {
+export const useQuestionByIdQuery = (questionId: string | undefined) => {
   return useQuery({
     queryKey: ["question", questionId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("questions")
         .select("*")
-        .eq("id", questionId)
+        .eq("id", +questionId!)
         .single();
       if (error) throw error;
       return data;
