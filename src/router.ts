@@ -8,6 +8,7 @@ import ProtectedLayout from "./components/layouts/protected-layout";
 import AskPage from "./pages/ask";
 import QuestionIdPage from "./pages/question/id";
 import ProfilePage from "./pages/profile";
+import NotFoundPage from "./pages/404";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "*",
+    Component: NotFoundPage,
   },
 ]);
 

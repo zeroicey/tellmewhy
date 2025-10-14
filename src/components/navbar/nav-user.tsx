@@ -61,7 +61,7 @@ export function NavUser({
         <DropdownMenuGroup>
           <DropdownMenuItem
             onClick={() => {
-              navigate("/profile");
+              navigate("/home");
             }}
           >
             <Home />
@@ -69,11 +69,11 @@ export function NavUser({
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
-              navigate("/home");
+              navigate("/profile");
             }}
           >
             <BadgeCheck />
-            Account
+            Profile
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Bell />
