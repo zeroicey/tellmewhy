@@ -33,7 +33,14 @@ export function NavUser({
           className="text-white hover:bg-white/10 border-none"
         >
           <Avatar className="h-8 w-8 rounded-lg">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage
+              src={
+                user.avatar.trim() !== ""
+                  ? user.avatar
+                  : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.name}`
+              }
+              alt={user.name}
+            />
             <AvatarFallback className="rounded-lg bg-white/10 text-white">
               ??
             </AvatarFallback>
@@ -54,7 +61,14 @@ export function NavUser({
         <DropdownMenuLabel className="p-0 font-normal text-white/80">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage
+                src={
+                  user.avatar.trim() !== ""
+                    ? user.avatar
+                    : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.name}`
+                }
+                alt={user.name}
+              />
               <AvatarFallback className="rounded-lg bg-white/10 text-white">
                 ??
               </AvatarFallback>
