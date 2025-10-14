@@ -46,9 +46,10 @@ export default function IndexPage() {
           animationDuration={1}
           pauseBetweenAnimations={1}
         />
-        <p
+        <div
           style={{
             margin: 0,
+            marginTop: "2rem",
             fontSize: "1.2rem",
             fontWeight: "normal",
             opacity: 0.8,
@@ -67,7 +68,7 @@ export default function IndexPage() {
             rootMargin="-100px"
             textAlign="center"
           />
-        </p>
+        </div>
       </div>
       <div
         style={{

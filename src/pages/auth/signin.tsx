@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { GalleryVerticalEnd, Loader2 } from "lucide-react";
-import { useState, type MouseEvent } from "react";
+import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router";
 
@@ -26,7 +26,7 @@ export default function SigninPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSignIn = async (e: MouseEvent) => {
+  const handleSignIn = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
     await supabase.auth.signInWithPassword({

@@ -27,7 +27,7 @@ export default function AskPage() {
   const [isPublic, setIsPublic] = useState(true);
 
   // 提交内容的逻辑操作
-  const handleAsk = async (e: MouseEvent) => {
+  const handleAsk = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
     if (title.trim() === "") {
