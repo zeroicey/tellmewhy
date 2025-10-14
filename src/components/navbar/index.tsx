@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import useAuthStore from "@/stores/auth";
 import { Link, useLocation, useNavigate } from "react-router";
 import { NavUser } from "./nav-user";
+import { Plus } from "lucide-react";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -16,15 +17,9 @@ export default function Navbar() {
   }
   if (!isSignedIn || !user) {
     return (
-      <div
-        className="w-full flex items-center justify-between p-2 backdrop-blur-sm border-b border-gray-800/20"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(12, 12, 12, 0.9) 0%, rgba(26, 26, 46, 0.9) 50%, rgba(22, 33, 62, 0.9) 100%)",
-        }}
-      >
+      <div className="w-full flex items-center justify-between p-2 bg-white border-b border-gray-200">
         <Link to={"/questions"}>
-          <span className="text-white font-semibold hover:text-blue-300 transition-colors">
+          <span className="text-gray-900 font-semibold hover:text-blue-600 transition-colors">
             Tell me why ❓
           </span>
         </Link>
@@ -38,15 +33,9 @@ export default function Navbar() {
     );
   }
   return (
-    <div
-      className="flex items-center justify-between p-2 backdrop-blur-sm border-b border-gray-800/20"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(12, 12, 12, 0.9) 0%, rgba(26, 26, 46, 0.9) 50%, rgba(22, 33, 62, 0.9) 100%)",
-      }}
-    >
+    <div className="flex items-center justify-between p-2 bg-white border-b border-gray-200">
       <Link to={"/questions"}>
-        <span className="text-white font-semibold hover:text-blue-300 transition-colors">
+        <span className="text-gray-900 font-semibold hover:text-blue-600 transition-colors">
           Tell me why ❓
         </span>
       </Link>
@@ -59,7 +48,7 @@ export default function Navbar() {
               navigate("/ask");
             }}
           >
-            Ask
+            <Plus />
           </Button>
         )}
         <NavUser
