@@ -33,6 +33,11 @@ export default function SignUpPage() {
     await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username,
+        },
+      },
     });
     setLoading(false);
     navigate("/signin");
@@ -58,7 +63,7 @@ export default function SignUpPage() {
               <form>
                 <FieldGroup>
                   <Field>
-                    <FieldLabel htmlFor="name">Full Name</FieldLabel>
+                    <FieldLabel htmlFor="name">Username</FieldLabel>
                     <Input
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}

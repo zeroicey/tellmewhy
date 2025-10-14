@@ -1,13 +1,11 @@
-import { useProfileQuery } from "@/hooks/use-profile-query";
 import { Button } from "@/components/ui/button";
 import useAuthStore from "@/stores/auth";
-import { Link, Navigate, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { NavUser } from "./nav-user";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { data } = useProfileQuery();
   const { isSignedIn, user } = useAuthStore();
   if (
     location.pathname.startsWith("/signin") ||
@@ -15,7 +13,7 @@ export default function Navbar() {
   ) {
     return null;
   }
-  if (!isSignedIn || !user || !data) {
+  if (!isSignedIn || !user) {
     return (
       <div className="w-full flex items-center justify-between p-2 sticky top-0 bg-white">
         <Link to={"/questions"}>
@@ -44,9 +42,9 @@ export default function Navbar() {
         )}
         <NavUser
           user={{
-            name: data?.username || "Unknown",
+            name: user.user_metadata.username || "Unknown",
             email: user?.email || "",
-            avatar: data?.avatar_url || "",
+            avatar: user.user_metadata.avatar_url || "",
           }}
         />
       </div>

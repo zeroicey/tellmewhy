@@ -38,6 +38,8 @@ const useAuthStore = create<AuthStore>((set, get) => {
           error,
         } = await supabase.auth.getSession();
 
+        console.log("初始会话:", session);
+
         if (error) {
           console.error("获取会话失败:", error);
           toast.error(`获取会话失败: ${error.message}`);
