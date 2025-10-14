@@ -17,6 +17,7 @@ export const useProfileQuery = () => {
       if (error) throw error;
       return data;
     },
+    retry: false,
     enabled: isSignedIn,
   });
 };
