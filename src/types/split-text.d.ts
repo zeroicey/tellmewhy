@@ -1,4 +1,4 @@
-declare module "@/components/SplitText" {
+declare module "@/components/ui/SplitText" {
   interface SplitTextProps {
     text: string;
     className?: string;

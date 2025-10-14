@@ -1,8 +1,8 @@
-import Orb from "@/components/Orb";
+import Orb from "@/components/ui/Orb";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import SplitText from "@/components/SplitText";
-import TrueFocus from "@/components/TrueFocus";
+import SplitText from "@/components/ui/SplitText";
+import TrueFocus from "@/components/ui/TrueFocus";
 
 export default function IndexPage() {
   const navigate = useNavigate();
