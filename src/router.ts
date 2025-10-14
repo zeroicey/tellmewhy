@@ -19,6 +19,10 @@ const router = createBrowserRouter([
       { path: "signin", Component: SignInPage },
       { path: "signup", Component: SignUpPage },
       {
+        path: "profile",
+        Component: ProfilePage,
+      },
+      {
         Component: ProtectedLayout,
         children: [
           {
@@ -37,10 +41,6 @@ const router = createBrowserRouter([
           {
             path: "ask",
             Component: AskPage,
-          },
-          {
-            path: "profile",
-            Component: ProfilePage,
           },
         ],
       },
