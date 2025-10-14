@@ -2,14 +2,14 @@ import { Button } from "@/components/ui/button";
 import useAuthStore from "@/stores/auth";
 import { Link, useLocation, useNavigate } from "react-router";
 import { NavUser } from "./nav-user";
-import { Plus } from "lucide-react";
+import { LogOut, Plus } from "lucide-react";
 import { useProfileQuery } from "@/hooks/use-profile-query";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: profile } = useProfileQuery();
-  const { isSignedIn, user } = useAuthStore();
+  const { user } = useAuthStore();
   if (
     location.pathname.startsWith("/signin") ||
     location.pathname.startsWith("/signup") ||
@@ -17,23 +17,30 @@ export default function Navbar() {
   ) {
     return null;
   }
-  if (!isSignedIn || !user) {
+
+  if (!profile) {
     return (
-      <div className="w-full flex items-center justify-between p-2 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between p-2 bg-white border-b border-gray-200">
         <Link to={"/questions"}>
           <span className="text-gray-900 font-semibold hover:text-blue-600 transition-colors">
             Tell me why ❓
           </span>
         </Link>
-        <Button
-          onClick={() => navigate("/signin")}
-          className="bg-blue-600 hover:bg-blue-700 text-white border-none"
-        >
-          Sign In
-        </Button>
+        <div className="flex items-center">
+          <Button
+            className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white border-none mr-2"
+            variant={"default"}
+            onClick={() => {
+              navigate("/ask");
+            }}
+          >
+            <LogOut /> Logout
+          </Button>
+        </div>
       </div>
     );
   }
+
   return (
     <div className="flex items-center justify-between p-2 bg-white border-b border-gray-200">
       <Link to={"/questions"}>
@@ -42,7 +49,7 @@ export default function Navbar() {
         </span>
       </Link>
       <div className="flex items-center">
-        {location.pathname !== "/ask" && (
+        {!location.pathname.startsWith("/ask") && (
           <Button
             className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white border-none mr-2"
             variant={"default"}
@@ -53,13 +60,15 @@ export default function Navbar() {
             <Plus />
           </Button>
         )}
-        <NavUser
-          user={{
-            name: profile?.nickname || "Unknown",
-            email: user?.email || "",
-            avatar: profile?.avatar || "",
-          }}
-        />
+        {profile && (
+          <NavUser
+            user={{
+              name: profile?.nickname || "Unknown",
+              email: user?.email || "",
+              avatar: profile?.avatar || "",
+            }}
+          />
+        )}
       </div>
     </div>
   );

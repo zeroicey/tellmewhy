@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import useAuthStore from "@/stores/auth";
+import { Navigate } from "react-router";
 
 export default function ProfilePage() {
   const [avatar, setAvatar] = useState("");
@@ -21,18 +23,23 @@ export default function ProfilePage() {
   const handleUpdate = async () => {};
 
   const handleAvatarChange = async () => {
-      console.log("the avatar is changed secussfully!");
-      
+    console.log("the avatar is changed secussfully!");
   };
-  
+
   // useEffect(() => {
   //   const fetchUserData = async () => {
   //     setLoading(true)
   //     try {
-        
+
   //     }
   //   }
   // })
+
+  const { isSignedIn } = useAuthStore();
+
+  if (!isSignedIn) {
+    return <Navigate to="/signin" replace />;
+  }
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-30">
@@ -51,7 +58,9 @@ export default function ProfilePage() {
                 alt="@shadcn"
               />
             </Avatar>
-            <Button type="button" onClick={handleAvatarChange}>Change avatar</Button>
+            <Button type="button" onClick={handleAvatarChange}>
+              Change avatar
+            </Button>
           </div>
           <div className="w-full">
             <FieldGroup>
