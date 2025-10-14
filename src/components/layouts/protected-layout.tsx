@@ -7,7 +7,7 @@ export default function ProtectedLayout() {
   const { isSignedIn, loading: authLoading } = useAuthStore();
   const { data: profile, isLoading } = useProfileQuery();
 
-  if (authLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="w-full h-full fixed inset-0 flex items-center justify-center bg-[#f4f6f9] z-50">
         <Loader2 className="animate-spin" size={48} />
@@ -18,8 +18,7 @@ export default function ProtectedLayout() {
   if (!isSignedIn) {
     return <Navigate to="/signin" replace />;
   }
-
-  if (isSignedIn && !profile && !isLoading && !authLoading) {
+  if (isSignedIn && !profile) {
     return <Navigate to="/profile" replace />;
   }
 

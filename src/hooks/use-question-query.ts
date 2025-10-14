@@ -14,7 +14,6 @@ export const useQuestionQuery = () => {
   });
 };
 
-// 获取单个问题的hook
 export const useQuestionByIdQuery = (questionId: string | undefined) => {
   return useQuery({
     queryKey: ["question", questionId],
