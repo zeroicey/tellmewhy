@@ -23,7 +23,6 @@ import { toast } from "sonner";
 export default function SignUpPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,11 +33,6 @@ export default function SignUpPage() {
     await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          username,
-        },
-      },
     });
     toast.info("Please check your email for confirmation link.");
     setLoading(false);
@@ -64,18 +58,6 @@ export default function SignUpPage() {
             <CardContent>
               <form>
                 <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="name">Username</FieldLabel>
-                    <Input
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      id="name"
-                      type="text"
-                      placeholder="John Doe"
-                      required
-                      disabled={loading}
-                    />
-                  </Field>
                   <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
                     <Input
