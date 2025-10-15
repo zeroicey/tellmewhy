@@ -135,7 +135,7 @@ export default function ProfilePage() {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-30">
-      <div className="w-200 h-100 rounded-xl box-border border border-black shadow-2xl p-10">
+      <div className="w-200 h-100 rounded-xl box-border  border-black shadow-2xl p-10">
         <h1 className="text-2xl font-bold mb-3 text-center">User Profile</h1>
         <h2 className="text-center mb-8 text-gray-600">
           Manage your profile information ✨
