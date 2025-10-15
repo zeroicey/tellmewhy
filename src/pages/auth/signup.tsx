@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ export default function SignUpPage() {
         },
       },
     });
+    toast.info("Please check your email for confirmation link.");
     setLoading(false);
     navigate("/signin");
   };
