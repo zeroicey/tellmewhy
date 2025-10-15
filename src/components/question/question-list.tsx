@@ -41,7 +41,7 @@ export default function QuestionList() {
           <Link to={`/questions/${question.id}`}>
             <h1 className="text-xl font-bold">{question.title}</h1>
           </Link>
-          <p>{question.content}</p>
+          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap break-words">{question.content}</p>
         </div>
       ))}
     </div>

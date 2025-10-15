@@ -34,8 +34,15 @@ export default function AnswerList({ questionId }: Props) {
 
   if (!answers || answers.length === 0) {
     return (
-      <div className="text-gray-500">
-        No answers yet. Be the first to answer!
+      <div className="w-full sm:w-[450px] md:w-[600px] lg:w-[800px] bg-white p-8 shadow-md rounded-lg border border-gray-100">
+        <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+          <div className="text-6xl mb-4">💬</div>
+          <h3 className="text-lg font-medium mb-2 text-gray-700">还没有回答</h3>
+          <p className="text-sm text-center text-gray-500 mb-4">
+            成为第一个回答这个问题的人吧！
+          </p>
+          <div className="w-16 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
+        </div>
       </div>
     );
   }

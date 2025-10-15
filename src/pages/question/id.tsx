@@ -4,16 +4,37 @@ import { useState } from "react";
 import { useAnswerCreateMutation } from "@/hooks/use-answer-query";
 import AnswerEditor from "@/components/answer/answer-editor";
 import AnswerList from "@/components/answer/answer-list";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default function QuestionIdPage() {
   const { questionId } = useParams<{ questionId: string }>();
   const [answerEditorShown, setAnswerEditorShown] = useState(false);
   const [answerEditorValue, setAnswerEditorValue] = useState("");
+  const [isQuestionExpanded, setIsQuestionExpanded] = useState(false);
   const { data: question, isPending, error } = useQuestionByIdQuery(questionId);
   const { mutate: createMutate } = useAnswerCreateMutation(questionId);
 
+  const MAX_CONTENT_LENGTH = 200; // 设置最大显示字符数
+
   const handleAnswerSubmit = () => {
     createMutate(answerEditorValue);
+  };
+
+  const shouldTruncateQuestion = (content: string | null) => {
+    if (!content) return false;
+    return content.length > MAX_CONTENT_LENGTH;
+  };
+  
+  const getDisplayContent = (content: string | null) => {
+    if (!content) return "";
+    if (!shouldTruncateQuestion(content) || isQuestionExpanded) {
+      return content;
+    }
+    return content.slice(0, MAX_CONTENT_LENGTH) + "...";
+  };
+
+  const toggleQuestionExpanded = () => {
+    setIsQuestionExpanded(!isQuestionExpanded);
   };
 
   // 加载状态
@@ -70,14 +91,46 @@ export default function QuestionIdPage() {
 
   // 显示问题详情
   return (
-    <div className="flex flex-col w-full bg-[#f4f6f9] gap-2 items-center relative">
-      <div className="w-full max-h-[600px] bg-white flex flex-col items-center shadow-md">
-        <div className="w-200 p-5">
+    <div className="flex flex-col w-full bg-[#f4f6f9] gap-2 items-center relative pb-4">
+      <div className="w-full bg-white flex flex-col items-center shadow-md">
+        <div className="w-full sm:w-[450px] md:w-[600px] lg:w-[800px] p-5">
           <h1 className="text-2xl font-bold mb-4 text-gray-900">
             {question.title}
           </h1>
-          <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {question.content}
+          <div className="relative">
+            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap break-words mb-2">
+              {getDisplayContent(question.content)}
+            </div>
+            
+            {question.content && shouldTruncateQuestion(question.content) && (
+              <>
+                {/* 底部展开按钮 */}
+                {!isQuestionExpanded && (
+                  <div className="flex justify-center mt-2">
+                    <button
+                      onClick={toggleQuestionExpanded}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-all duration-200 border border-blue-200 hover:border-blue-300 cursor-pointer"
+                    >
+                      <span>查看完整</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {/* Sticky收起按钮 - 只在展开时显示 */}
+                {isQuestionExpanded && (
+                  <div className="sticky bottom-4 flex justify-center mt-4">
+                    <button
+                      onClick={toggleQuestionExpanded}
+                      className="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 backdrop-blur-sm border border-blue-500 cursor-pointer"
+                    >
+                      <ChevronUp className="w-4 h-4" />
+                      <span>收起</span>
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
