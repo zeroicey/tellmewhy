@@ -76,8 +76,8 @@ export default function ProfilePage() {
         // ❌ 没有 profile，只上传 Storage
         toast.info("头像已上传，但还未创建个人资料。");
       }
-    } catch (error: any) {
-      toast.error(error.message || "头像上传失败");
+    } catch {
+      toast.error("头像上传失败");
     } finally {
       setUploading(false);
     }
@@ -124,8 +124,8 @@ export default function ProfilePage() {
 
       // 刷新缓存
       queryClient.invalidateQueries({ queryKey: ["get-profile", user.id] });
-    } catch (error: any) {
-      toast.error(error.message || "操作失败");
+    } catch {
+      toast.error("操作失败");
     } finally {
       setLoading(false);
     }
