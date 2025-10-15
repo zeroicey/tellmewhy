@@ -2,11 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import useAuthStore from "@/stores/auth";
@@ -83,7 +79,9 @@ export default function ProfilePage() {
   };
 
   // 上传头像逻辑
-  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -104,9 +102,7 @@ export default function ProfilePage() {
       if (uploadError) throw uploadError;
 
       // 获取公开 URL
-      const { data } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(fileName);
+      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
 
       setAvatar(data.publicUrl);
 
@@ -154,7 +150,11 @@ export default function ProfilePage() {
               disabled={uploading}
               className="bg-blue-400"
             >
-              {uploading ? <Loader2 className="animate-spin" /> : "Change avatar"}
+              {uploading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Change avatar"
+              )}
             </Button>
           </div>
 

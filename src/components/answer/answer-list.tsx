@@ -14,20 +14,26 @@ export default function AnswerList({ questionId }: Props) {
           key={answer.id}
           className="w-full sm:w-[450px] md:w-[600px] lg:w-[800px] bg-white p-2 shadow-md"
         >
-          <div className="flex items-center justify-start mb-2 gap-2">
-            {/* avatar */}
-            <Avatar>
-              <AvatarImage
-                src={
-                  answer.profile.avatar?.trim() !== ""
-                    ? answer.profile.avatar!
-                    : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${answer.profile.username}`
-                }
-                alt="@shadcn"
-              />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <span>{answer.profile.username}</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              {/* avatar */}
+              <Avatar>
+                <AvatarImage
+                  src={
+                    answer.profile.avatar?.trim() !== ""
+                      ? answer.profile.avatar!
+                      : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${answer.profile.username}`
+                  }
+                  alt="@shadcn"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <span className="font-bold">{answer.profile.username}</span>
+            </div>
+            {/* publish time */}
+            <span className="text-sm text-gray-500">
+              {new Date(answer.created_at).toLocaleString()}
+            </span>
           </div>
           <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
             {answer.content}
