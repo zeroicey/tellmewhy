@@ -1,5 +1,11 @@
 import { supabase } from "@/lib/supabase";
-import { useQuery, type QueryKey } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryKey,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const queryKey: QueryKey = ["list-answers"];
 
@@ -9,7 +15,7 @@ export const useAnswerQuery = (questionId: string | undefined) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("answers")
-        .select("*")
+        .select(`*, profile:profiles(*)`)
         .eq("question_id", +questionId!);
       if (error) throw error;
       return data;
@@ -18,6 +24,27 @@ export const useAnswerQuery = (questionId: string | undefined) => {
   });
 };
 
-export const userAnswerCreateMutate = () => {
+export const useAnswerCreateMutation = (questionId: string | undefined) => {
+  const queryClient = useQueryClient();
 
-}
+  return useMutation({
+    mutationFn: async (content: string) => {
+      const { data, error } = await supabase.from("answers").insert({
+        content,
+        question_id: +questionId!,
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Publish answer successfully!");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: () => {
+      toast.error("Publish answer failed!");
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+};

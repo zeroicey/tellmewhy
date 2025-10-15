@@ -8,11 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger  ,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router"; 
 
 export function NavUser({
   user,

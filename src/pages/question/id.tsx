@@ -1,16 +1,20 @@
 import { useParams } from "react-router";
 import { useQuestionByIdQuery } from "@/hooks/use-question-query";
 import { useState } from "react";
-import { useAnswerQuery } from "@/hooks/use-answer-query";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAnswerCreateMutation } from "@/hooks/use-answer-query";
 import AnswerEditor from "@/components/answer/answer-editor";
+import AnswerList from "@/components/answer/answer-list";
 
 export default function QuestionIdPage() {
   const { questionId } = useParams<{ questionId: string }>();
-  const [answerEditorShown, setAnswerEditorShown] = useState(true);
+  const [answerEditorShown, setAnswerEditorShown] = useState(false);
   const [answerEditorValue, setAnswerEditorValue] = useState("");
   const { data: question, isPending, error } = useQuestionByIdQuery(questionId);
-  const { data: answers } = useAnswerQuery(questionId);
+  const { mutate: createMutate } = useAnswerCreateMutation(questionId);
+
+  const handleAnswerSubmit = () => {
+    createMutate(answerEditorValue);
+  };
 
   // 加载状态
   if (isPending) {
@@ -66,7 +70,7 @@ export default function QuestionIdPage() {
 
   // 显示问题详情
   return (
-    <div className="flex flex-col w-full bg-[#f4f6f9] gap-2 items-center">
+    <div className="flex flex-col w-full bg-[#f4f6f9] gap-2 items-center relative">
       <div className="w-full max-h-[600px] bg-white flex flex-col items-center shadow-md">
         <div className="w-200 p-5">
           <h1 className="text-2xl font-bold mb-4 text-gray-900">
@@ -78,23 +82,39 @@ export default function QuestionIdPage() {
         </div>
       </div>
       {answerEditorShown && (
-        <AnswerEditor answerEditorValue={answerEditorValue} setAnswerEditorValue={setAnswerEditorValue} />
+        <AnswerEditor
+          answerEditorValue={answerEditorValue}
+          setAnswerEditorValue={setAnswerEditorValue}
+          handleAnswerSubmit={handleAnswerSubmit}
+          setAnswerEditorShown={setAnswerEditorShown}
+        />
       )}
-      {answers?.map((answer) => (
-        <div
-          key={answer.id}
-          className="w-full sm:w-[450px] md:w-[600px] lg:w-[800px] bg-white p-2 shadow-md"
+
+      <AnswerList questionId={questionId} />
+
+      {/* 悬浮的添加按钮 */}
+      {!answerEditorShown && (
+        <button
+          onClick={() => setAnswerEditorShown(true)}
+          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-50 cursor-pointer"
+          aria-label="添加回答"
         >
-          {/* avatar */}
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {answer.content}
-          </div>
-        </div>
-      ))}
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
