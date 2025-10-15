@@ -1,41 +1,122 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import useAuthStore from "@/stores/auth";
 import { Navigate } from "react-router";
+import { useProfileQuery } from "@/hooks/use-profile-query";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
+  const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { isSignedIn, loading: authLoading } = useAuthStore();
+  const { data: profile } = useProfileQuery();
 
-  const handleUpdate = async () => {};
+  // 初始化资料
+  useEffect(() => {
+    if (profile) {
+      setUsername(profile.username || "");
+      setNickname(profile.nickname || "");
+      if (profile.avatar) {
+        setAvatar(profile.avatar);
+      }
+    }
+  }, [profile]);
 
-  const handleAvatarChange = async () => {
-    console.log("the avatar is changed secussfully!");
+  // 获取头像（默认）
+  const getAvatarUrl = () => {
+    if (avatar) return avatar;
+    // 默认头像
+    const { data } = supabase.storage
+      .from("avatars")
+      .getPublicUrl("59323300.jpg");
+    return data.publicUrl;
   };
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     setLoading(true)
-  //     try {
+  // 更新资料
+  const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setLoading(true);
 
-  //     }
-  //   }
-  // })
+    if (!profile) {
+      const { error } = await supabase.from("profiles").insert({
+        username,
+        nickname,
+        avatar_url: avatar,
+      });
+      if (error) toast.error(error.message);
+      else toast.success("Profile created successfully!");
+      setLoading(false);
+      return;
+    }
 
-  const { isSignedIn, loading: authLoading } = useAuthStore();
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        username,
+        nickname,
+        avatar_url: avatar,
+      })
+      .eq("id", profile.id);
+
+    if (error) toast.error(error.message);
+    else toast.success("Profile updated successfully!");
+
+    setLoading(false);
+  };
+
+  // 点击按钮 -> 触发文件选择框
+  const handleChangeAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // 上传头像逻辑
+  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${profile?.id}.${fileExt}`;
+
+      // 上传文件到 Supabase
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 获取公开 URL
+      const { data } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+      setAvatar(data.publicUrl);
+
+      toast.success("Avatar uploaded successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to upload avatar");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (!isSignedIn && !authLoading) {
     return <Navigate to="/signin" replace />;
@@ -50,47 +131,61 @@ export default function ProfilePage() {
         <h2 className="text-center">
           In this page, you can change your informations~
         </h2>
+
         <form className="flex box-border m-10 gap-20">
           <div className="flex flex-col items-center ml-10">
             <Avatar className="w-30 h-30 items-center mb-5">
-              <AvatarImage
-                src="https://avatars.githubusercontent.com/u/186951280?v=4"
-                alt="@shadcn"
-              />
+              <AvatarImage src={getAvatarUrl()} alt="avatar" />
+              <AvatarFallback>U</AvatarFallback>
             </Avatar>
-            <Button type="button" onClick={handleAvatarChange}>
-              Change avatar
+
+            {/* 隐藏的文件输入框 */}
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleAvatarChange}
+              style={{ display: "none" }}
+            />
+
+            <Button
+              type="button"
+              onClick={handleChangeAvatarClick}
+              disabled={uploading}
+              className="bg-blue-400"
+            >
+              {uploading ? <Loader2 className="animate-spin" /> : "Change avatar"}
             </Button>
           </div>
+
           <div className="w-full">
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="checkout-7j9-card-name-43j">
-                  Username
-                </FieldLabel>
+                <FieldLabel>Username</FieldLabel>
                 <Input
-                  id="checkout-7j9-card-name-43j"
-                  placeholder="{username}"
+                  placeholder="Enter username"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="ccheckout-7j9-card-name-43j">
-                  Nickname
-                </FieldLabel>
+                <FieldLabel>Nickname</FieldLabel>
                 <Input
-                  id="checkout-7j9-card-name-43j"
-                  placeholder="{nickname}"
+                  placeholder="Enter nickname"
                   required
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
                 />
               </Field>
             </FieldGroup>
+
             <div className="mt-10">
               <Button
                 type="submit"
                 onClick={handleUpdate}
                 disabled={loading}
-                className="bg-blue-400"
+                className="bg-blue-500"
               >
                 {loading ? <Loader2 className="animate-spin" /> : "Update"}
               </Button>
