@@ -63,7 +63,7 @@ export default function Navbar() {
         {profile && (
           <NavUser
             user={{
-              name: profile?.nickname || "Unknown",
+              name: profile.nickname || profile.username || "Unknown",
               email: user?.email || "",
               avatar: profile?.avatar || "",
             }}

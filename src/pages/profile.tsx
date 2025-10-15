@@ -9,133 +9,152 @@ import useAuthStore from "@/stores/auth";
 import { Navigate } from "react-router";
 import { useProfileQuery } from "@/hooks/use-profile-query";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ProfilePage() {
-  const [avatar, setAvatar] = useState("");
+  const { isSignedIn, loading: authLoading, user } = useAuthStore();
+  const { data: profile } = useProfileQuery();
+  const queryClient = useQueryClient();
+
   const [username, setUsername] = useState("");
   const [nickname, setNickname] = useState("");
+  const [avatar, setAvatar] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { isSignedIn, loading: authLoading } = useAuthStore();
-  const { data: profile } = useProfileQuery();
 
-  // 初始化资料
+  // 初始化表单
   useEffect(() => {
     if (profile) {
-      setUsername(profile.username || "");
-      setNickname(profile.nickname || "");
-      if (profile.avatar) {
-        setAvatar(profile.avatar);
-      }
+      setUsername(profile.username ?? "");
+      setNickname(profile.nickname ?? "");
+      setAvatar(profile.avatar ?? "");
     }
   }, [profile]);
 
-  // 获取头像（默认）
-  const getAvatarUrl = () => {
-    if (avatar) return avatar;
-    // 默认头像
-    const { data } = supabase.storage
-      .from("avatars")
-      .getPublicUrl("59323300.jpg");
-    return data.publicUrl;
-  };
+  // 点击更换头像按钮
+  const handleChangeAvatarClick = () => fileInputRef.current?.click();
 
-  // 更新资料
-  const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  // 🚀 上传头像（不一定更新数据库）
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
 
-    if (!profile) {
-      const { error } = await supabase.from("profiles").insert({
-        username,
-        nickname,
-        avatar_url: avatar,
-      });
-      if (error) toast.error(error.message);
-      else toast.success("Profile created successfully!");
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        username,
-        nickname,
-        avatar_url: avatar,
-      })
-      .eq("id", profile.id);
-
-    if (error) toast.error(error.message);
-    else toast.success("Profile updated successfully!");
-
-    setLoading(false);
-  };
-
-  // 点击按钮 -> 触发文件选择框
-  const handleChangeAvatarClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  // 上传头像逻辑
-  const handleAvatarChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+    setUploading(true);
     try {
-      setUploading(true);
-
       const fileExt = file.name.split(".").pop();
-      const fileName = `${profile?.id}.${fileExt}`;
+      const fileName = `${user.id}.${fileExt}`;
+      const filePath = fileName;
 
-      // 上传文件到 Supabase
+      // 上传文件到 Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(fileName, file, {
-          cacheControl: "3600",
-          upsert: true,
-        });
+        .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
       // 获取公开 URL
-      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-      setAvatar(data.publicUrl);
+      setAvatar(publicUrl);
 
-      toast.success("Avatar uploaded successfully!");
+      // ✅ 如果 profile 已存在 → 同步更新数据库
+      if (profile) {
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ avatar: filePath })
+          .eq("id", profile.id);
+
+        if (updateError) throw updateError;
+
+        // 刷新缓存
+        queryClient.invalidateQueries({ queryKey: ["get-profile", user.id] });
+        toast.success("头像已更新！");
+      } else {
+        // ❌ 没有 profile，只上传 Storage
+        toast.info("头像已上传，但还未创建个人资料。");
+      }
     } catch (error: any) {
-      toast.error(error.message || "Failed to upload avatar");
+      toast.error(error.message || "头像上传失败");
     } finally {
       setUploading(false);
     }
   };
 
-  if (!isSignedIn && !authLoading) {
-    return <Navigate to="/signin" replace />;
-  }
+  // 🚀 更新或创建 Profile
+  const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!username.trim()) {
+      toast.error("Username 不能为空！");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (!profile) {
+        // 🧩 无 profile → 创建
+        const { error } = await supabase.from("profiles").insert({
+          id: user.id,
+          username,
+          nickname,
+          avatar: avatar.startsWith("http")
+            ? avatar.replace(/^.*\/([^/]+)$/, "$1") // 提取文件名部分
+            : avatar || null,
+        });
+        if (error) throw error;
+        toast.success("Profile 创建成功！");
+      } else {
+        // 🧩 有 profile → 更新
+        const { error } = await supabase
+          .from("profiles")
+          .update({
+            username,
+            nickname,
+            avatar: avatar.startsWith("http")
+              ? avatar.replace(/^.*\/([^/]+)$/, "$1")
+              : avatar || profile.avatar,
+          })
+          .eq("id", profile.id);
+        if (error) throw error;
+        toast.success("资料更新成功！");
+      }
+
+      // 刷新缓存
+      queryClient.invalidateQueries({ queryKey: ["get-profile", user.id] });
+    } catch (error: any) {
+      toast.error(error.message || "操作失败");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isSignedIn && !authLoading) return <Navigate to="/signin" replace />;
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-30">
-      <div className="w-200 h-100 rounded-xl box-border border-solid border-black shadow-2xl">
-        <h1 className="text-2xl font-bold mb-3 mt-5 text-center">
-          User Profile
-        </h1>
-        <h2 className="text-center">
-          In this page, you can change your informations~
+      <div className="w-200 h-100 rounded-xl box-border border border-black shadow-2xl p-10">
+        <h1 className="text-2xl font-bold mb-3 text-center">User Profile</h1>
+        <h2 className="text-center mb-8 text-gray-600">
+          Manage your profile information ✨
         </h2>
 
-        <form className="flex box-border m-10 gap-20">
-          <div className="flex flex-col items-center ml-10">
-            <Avatar className="w-30 h-30 items-center mb-5">
-              <AvatarImage src={getAvatarUrl()} alt="avatar" />
-              <AvatarFallback>U</AvatarFallback>
+        <form className="flex gap-20">
+          {/* 左侧头像 */}
+          <div className="flex flex-col items-center">
+            <Avatar className="w-30 h-30 mb-5">
+              <AvatarImage
+                src={
+                  avatar ||
+                  "https://api.dicebear.com/7.x/pixel-art/svg?seed=Unknown"
+                }
+                alt="avatar"
+              />
+              <AvatarFallback>??</AvatarFallback>
             </Avatar>
 
-            {/* 隐藏的文件输入框 */}
             <input
               type="file"
               accept="image/*"
@@ -158,36 +177,36 @@ export default function ProfilePage() {
             </Button>
           </div>
 
-          <div className="w-full">
+          {/* 右侧信息表单 */}
+          <div className="flex-1">
             <FieldGroup>
               <Field>
                 <FieldLabel>Username</FieldLabel>
                 <Input
                   placeholder="Enter username"
-                  required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
               </Field>
+
               <Field>
                 <FieldLabel>Nickname</FieldLabel>
                 <Input
                   placeholder="Enter nickname"
-                  required
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                 />
               </Field>
             </FieldGroup>
 
-            <div className="mt-10">
+            <div className="mt-10 flex justify-end">
               <Button
                 type="submit"
                 onClick={handleUpdate}
                 disabled={loading}
                 className="bg-blue-500"
               >
-                {loading ? <Loader2 className="animate-spin" /> : "Update"}
+                {loading ? <Loader2 className="animate-spin" /> : "Save"}
               </Button>
             </div>
           </div>

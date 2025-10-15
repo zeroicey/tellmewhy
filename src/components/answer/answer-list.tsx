@@ -7,9 +7,16 @@ interface Props {
 
 export default function AnswerList({ questionId }: Props) {
   const { data: answers } = useAnswerQuery(questionId);
+  if (!answers || answers.length === 0) {
+    return (
+      <div className="text-gray-500">
+        No answers yet. Be the first to answer!
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-3">
-      {answers?.map((answer) => (
+      {answers.map((answer) => (
         <div
           key={answer.id}
           className="w-full sm:w-[450px] md:w-[600px] lg:w-[800px] bg-white p-2 shadow-md"
@@ -18,17 +25,12 @@ export default function AnswerList({ questionId }: Props) {
             <div className="flex items-center gap-3">
               {/* avatar */}
               <Avatar>
-                <AvatarImage
-                  src={
-                    answer.profile.avatar?.trim() !== ""
-                      ? answer.profile.avatar!
-                      : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${answer.profile.username}`
-                  }
-                  alt="@shadcn"
-                />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarImage src={answer.profile.avatar} alt="@tellmewhy" />
+                <AvatarFallback>??</AvatarFallback>
               </Avatar>
-              <span className="font-bold">{answer.profile.username}</span>
+              <span className="font-bold">
+                {answer.profile.nickname || answer.profile.username}
+              </span>
             </div>
             {/* publish time */}
             <span className="text-sm text-gray-500">

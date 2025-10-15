@@ -7,15 +7,29 @@ export const useProfileQuery = () => {
   return useQuery({
     queryKey: ["get-profile", user?.id],
     queryFn: async () => {
-      if (!isSignedIn) return null;
-      if (!user) return null;
-      const { data, error } = await supabase
+      if (!isSignedIn || !user) return null;
+
+      const { data: profile } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .single();
-      if (error) throw error;
-      return data;
+
+      if (!profile) return null;
+
+      if (!profile?.avatar) {
+        return {
+          ...profile,
+          avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${
+            profile.username || "Unknown"
+          }`,
+        };
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(profile?.avatar);
+      return { ...profile, avatar: publicUrl };
     },
     retry: false,
     enabled: isSignedIn,

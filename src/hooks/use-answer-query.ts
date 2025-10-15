@@ -13,12 +13,29 @@ export const useAnswerQuery = (questionId: string | undefined) => {
   return useQuery({
     queryKey,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("answers")
         .select(`*, profile:profiles(*)`)
         .eq("question_id", +questionId!);
-      if (error) throw error;
-      return data;
+      const updatedData = data?.map((answer) => {
+        if (!answer.profile.avatar) {
+          return {
+            ...answer,
+            profile: {
+              ...answer.profile,
+              avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${answer.profile.username}`,
+            },
+          };
+        }
+        const { data: avatar } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(answer.profile.avatar);
+        return {
+          ...answer,
+          profile: { ...answer.profile, avatar: avatar.publicUrl },
+        };
+      });
+      return updatedData;
     },
     enabled: !!questionId,
   });

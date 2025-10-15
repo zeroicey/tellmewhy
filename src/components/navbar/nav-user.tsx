@@ -8,11 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger  ,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router"; 
+import { useNavigate } from "react-router";
 
 export function NavUser({
   user,
@@ -33,14 +33,7 @@ export function NavUser({
           className="text-gray-900 hover:bg-gray-100 border-none"
         >
           <Avatar className="h-8 w-8 rounded-lg">
-            <AvatarImage
-              src={
-                user.avatar.trim() !== ""
-                  ? user.avatar
-                  : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.name}`
-              }
-              alt={user.name}
-            />
+            <AvatarImage src={user.avatar} alt={user.name} />
             <AvatarFallback className="rounded-lg bg-gray-100 text-gray-900">
               ??
             </AvatarFallback>
@@ -61,21 +54,16 @@ export function NavUser({
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage
-                src={
-                  user.avatar.trim() !== ""
-                    ? user.avatar
-                    : `https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.name}`
-                }
-                alt={user.name}
-              />
+              <AvatarImage src={user.avatar} alt={user.name} />
               <AvatarFallback className="rounded-lg bg-gray-100 text-gray-900">
                 ??
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-xs text-gray-600">{user.email}</span>
+              <span className="truncate text-xs text-gray-600">
+                {user.email}
+              </span>
             </div>
           </div>
         </DropdownMenuLabel>
